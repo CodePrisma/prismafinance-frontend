@@ -15,6 +15,7 @@ jobs:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
     steps:
       - name: Checkout repository
@@ -42,8 +43,19 @@ jobs:
 
       - name: Deploy prebuilt project
         id: deploy
+        shell: bash
         run: |
-          DEPLOY_URL=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          set -euo pipefail
+
+          DEPLOY_OUTPUT="$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")"
+          echo "$DEPLOY_OUTPUT"
+
+          DEPLOY_URL="$(echo "$DEPLOY_OUTPUT" | grep -Eo 'https://[^[:space:]]+' | tail -n 1 || true)"
+          if [ -z "$DEPLOY_URL" ]; then
+            echo "Could not determine the deployment URL from Vercel CLI output."
+            exit 1
+          fi
+
           echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
           echo "Deploy URL: $DEPLOY_URL"
 
