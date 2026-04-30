@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap");
+
+:root {
+  --color-bg-primary: #1f3d2b;
+  --color-bg-secondary: #eef0eb;
+  --color-bg-hover: #31503a;
+  --color-sidebar: #183324;
+  --color-sidebar-deep: #12271b;
+  --color-primary: #c8a96a;
+  --color-primary-light: #e3c98f;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #d6d6cc;
+  --color-text-muted: #9a9b91;
+  --color-success: #4caf50;
+  --color-danger: #e53935;
+  --color-warning: #fbc02d;
+  --priority-high: #e53935;
+  --priority-medium: #fbc02d;
+  --priority-low: #4caf50;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(227, 201, 143, 0.24);
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.25);
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.22);
+  --shadow-glow: 0 18px 36px rgba(200, 169, 106, 0.16);
+  --font-title: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", "Segoe UI", sans-serif;
+  --surface-app: radial-gradient(circle at 14% 12%, rgba(227, 201, 143, 0.1), transparent 28%),
+    radial-gradient(circle at 86% 6%, rgba(76, 175, 80, 0.08), transparent 24%),
+    linear-gradient(135deg, #162719 0%, var(--color-bg-primary) 48%, #14271c 100%);
+  --surface-panel: rgba(42, 77, 54, 0.82);
+  --surface-panel-strong: rgba(42, 77, 54, 0.96);
+  --surface-sidebar: linear-gradient(180deg, #183324 0%, #142b1e 56%, #102318 100%);
+  --surface-topbar: transparent;
+  --surface-highlight: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --transition-default: 220ms ease;
+}

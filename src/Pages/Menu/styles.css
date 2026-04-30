@@ -1,0 +1,884 @@
+.dashboard-shell {
+  max-width: 1480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-topbar {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-search {
+  width: min(460px, 100%);
+  min-height: 46px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 18px;
+  border: 1px solid var(--color-border);
+  background: rgba(18, 39, 27, 0.58);
+  color: var(--color-text-secondary);
+}
+
+.dashboard-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.dashboard-search input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.dashboard-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  color: var(--color-text-secondary);
+}
+
+.dashboard-welcome strong {
+  color: var(--color-primary-light);
+}
+
+.dashboard-welcome button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-primary);
+  background: rgba(18, 39, 27, 0.58);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(310px, 380px);
+  gap: 28px;
+  align-items: start;
+}
+
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-title {
+  text-align: left;
+}
+
+.dashboard-title span {
+  display: block;
+  color: var(--color-primary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dashboard-title h1 {
+  margin: 8px 0 0;
+  color: var(--color-primary-light);
+  font-family: var(--font-title);
+  font-size: clamp(1.7rem, 2.5vw, 2.55rem);
+  font-weight: 600;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.finance-card,
+.monthly-card,
+.dre-panel,
+.kanban-column {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(18px);
+}
+
+.finance-card {
+  min-height: 132px;
+  padding: 22px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  text-align: left;
+  overflow: hidden;
+  position: relative;
+}
+
+.finance-card::before {
+  content: "";
+  position: absolute;
+  inset: -60px -70px auto auto;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.055);
+}
+
+.finance-card p,
+.finance-card strong,
+.finance-card__icon,
+.sparkline {
+  position: relative;
+  z-index: 1;
+}
+
+.finance-card p {
+  margin: 14px 0 10px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.finance-card small {
+  display: block;
+  min-height: 32px;
+  margin: -4px 0 10px;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.finance-card strong {
+  display: block;
+  color: var(--color-primary-light);
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.finance-card.receita strong {
+  color: #b7d89e;
+}
+
+.finance-card.despesa strong {
+  color: #df8b74;
+}
+
+.finance-card.receita-futura strong {
+  color: #d9b661;
+}
+
+.finance-card.despesa-futura strong {
+  color: #c98f72;
+}
+
+.finance-card__icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(200, 169, 106, 0.08);
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+
+.sparkline {
+  width: 116px;
+  min-width: 96px;
+  opacity: 0.9;
+}
+
+.monthly-card {
+  padding: 20px 22px 18px;
+}
+
+.monthly-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--color-text-secondary);
+  text-align: left;
+}
+
+.monthly-card__header > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.monthly-card__header svg {
+  color: var(--color-primary);
+}
+
+.monthly-card__header span {
+  font-weight: 500;
+}
+
+.monthly-card__header strong {
+  color: var(--color-primary-light);
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.monthly-chart {
+  width: 100%;
+  height: 230px;
+  margin-top: 10px;
+}
+
+.chart-gridline {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+
+.chart-line {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.22));
+}
+
+.chart-line--income {
+  stroke: var(--color-success);
+}
+
+.chart-line--expense {
+  stroke: #df7c5f;
+}
+
+.chart-line--profit {
+  stroke: url(#chartGold);
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+}
+
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-legend i {
+  width: 18px;
+  height: 2px;
+  display: inline-block;
+}
+
+.legend-income {
+  background: var(--color-success);
+}
+
+.legend-expense {
+  background: #df7c5f;
+}
+
+.legend-profit {
+  background: var(--color-primary);
+}
+
+.tasks-section {
+  text-align: left;
+}
+
+.tasks-section h2 {
+  margin: 0 0 14px;
+  color: var(--color-primary-light);
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.kanban-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.kanban-column {
+  padding: 14px;
+}
+
+.kanban-column header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.kanban-column header strong {
+  color: var(--color-primary);
+  letter-spacing: 0.1em;
+}
+
+.task-card {
+  margin-top: 10px;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--priority-medium);
+  background: rgba(255, 255, 255, 0.055);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.task-card--high {
+  border-left-color: var(--priority-high);
+}
+
+.task-card--medium {
+  border-left-color: var(--priority-medium);
+}
+
+.task-card--low {
+  border-left-color: var(--priority-low);
+}
+
+.task-card strong,
+.task-card span {
+  display: block;
+}
+
+.task-card strong {
+  color: var(--color-text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.task-card span {
+  margin-top: 9px;
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+}
+
+.task-card span svg {
+  margin-right: 7px;
+  color: var(--color-primary);
+}
+
+.dre-panel {
+  padding: 22px;
+  text-align: left;
+}
+
+.dre-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dre-panel header span {
+  display: block;
+  color: var(--color-primary-light);
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.dre-panel header strong,
+.dre-panel header b {
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+}
+
+.dre-line {
+  display: grid;
+  grid-template-columns: 1fr 96px;
+  align-items: end;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dre-line span,
+.dre-line strong {
+  display: block;
+}
+
+.dre-line span {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.dre-line strong {
+  margin-top: 6px;
+  color: var(--color-primary-light);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.dre-line--success strong {
+  color: #b7d89e;
+}
+
+.dre-line--danger strong {
+  color: #df8b74;
+}
+
+.dre-line--warning strong {
+  color: var(--color-warning);
+}
+
+.dre-line .sparkline {
+  width: 96px;
+  min-width: 96px;
+}
+
+.dre-total {
+  padding-top: 16px;
+}
+
+.dre-total > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dre-total span {
+  color: var(--color-text-secondary);
+}
+
+.dre-total strong {
+  color: var(--color-primary-light);
+  font-size: 1.12rem;
+  font-weight: 600;
+}
+
+.dre-progress {
+  height: 4px;
+  margin: 12px 0 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dre-progress span {
+  width: 65%;
+  height: 100%;
+  display: block;
+  background: var(--surface-highlight);
+}
+
+.dre-total small {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-secondary);
+}
+
+.dre-total small b {
+  color: var(--color-primary-light);
+}
+
+@media (max-width: 1180px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dre-panel {
+    max-width: none;
+  }
+
+  .dashboard-actions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 860px) {
+  .dashboard-topbar,
+  .dashboard-welcome {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dashboard-welcome {
+    align-items: flex-start;
+  }
+
+  .kpi-grid,
+  .kanban-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions-bar .action-button,
+  .quick-actions-bar .secondary-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-shell {
+    gap: 12px;
+  }
+
+  .dashboard-topbar {
+    min-height: 0;
+    padding-bottom: 10px;
+  }
+
+  .dashboard-search {
+    width: 100%;
+  }
+
+  .dashboard-welcome {
+    display: none;
+  }
+
+  .dashboard-grid {
+    gap: 12px;
+  }
+
+  .dashboard-main {
+    gap: 12px;
+  }
+
+  .dashboard-title h1 {
+    font-size: 1.38rem;
+    line-height: 1.2;
+  }
+
+  .finance-card,
+  .monthly-card,
+  .dre-panel {
+    padding: 14px;
+  }
+
+  .finance-card {
+    min-height: 0;
+    align-items: flex-start;
+  }
+
+  .finance-card .sparkline {
+    display: none;
+  }
+
+  .finance-card p {
+    margin: 9px 0 5px;
+  }
+
+  .finance-card small {
+    min-height: 0;
+  }
+
+  .finance-card strong {
+    font-size: 1.12rem;
+  }
+
+  .bank-balance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .monthly-chart {
+    height: 180px;
+  }
+
+  .dre-line {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quick-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bank-balance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.bank-balance-grid article {
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: rgba(18, 39, 27, 0.55);
+  text-align: left;
+}
+
+.bank-balance-grid span,
+.muted-text {
+  color: var(--color-text-secondary);
+}
+
+.bank-balance-grid strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--color-primary-light);
+}
+
+.quick-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(9, 20, 13, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.quick-modal {
+  width: min(520px, 100%);
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 20px;
+  background: var(--surface-panel-strong);
+  box-shadow: var(--shadow-soft);
+  text-align: left;
+}
+
+.quick-modal header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-primary-light);
+  font-size: 1.2rem;
+}
+
+.quick-modal header button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-primary-light);
+}
+
+.quick-modal label {
+  display: grid;
+  gap: 7px;
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+}
+
+.quick-modal input,
+.quick-modal select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: rgba(18, 39, 27, 0.72);
+  color: var(--color-text-primary);
+  padding: 10px 12px;
+}
+
+.dashboard-actions-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 1366px) {
+  .dashboard-shell {
+    gap: 14px;
+  }
+
+  .dashboard-topbar {
+    min-height: 54px;
+    gap: 14px;
+    padding-bottom: 12px;
+  }
+
+  .dashboard-search {
+    min-height: 40px;
+    border-radius: 12px;
+    padding: 0 12px;
+  }
+
+  .dashboard-welcome button {
+    width: 34px;
+    height: 34px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    gap: 18px;
+  }
+
+  .dashboard-main {
+    gap: 14px;
+  }
+
+  .dashboard-title h1 {
+    margin-top: 5px;
+    font-size: clamp(1.45rem, 2vw, 2.05rem);
+  }
+
+  .quick-actions-bar,
+  .kpi-grid {
+    gap: 12px;
+  }
+
+  .finance-card {
+    min-height: 108px;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .finance-card p {
+    margin: 10px 0 6px;
+    font-size: 0.88rem;
+  }
+
+  .finance-card small {
+    min-height: 28px;
+    margin-bottom: 8px;
+    font-size: 0.74rem;
+  }
+
+  .finance-card strong {
+    font-size: clamp(1.08rem, 1.6vw, 1.34rem);
+  }
+
+  .finance-card__icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+
+  .sparkline {
+    width: 92px;
+    min-width: 78px;
+  }
+
+  .monthly-card,
+  .dre-panel {
+    padding: 16px;
+  }
+
+  .monthly-card__header {
+    gap: 10px;
+  }
+
+  .monthly-card__header strong {
+    font-size: 1.05rem;
+  }
+
+  .monthly-chart {
+    height: 180px;
+  }
+
+  .bank-balance-grid {
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .bank-balance-grid article {
+    padding: 11px;
+  }
+
+  .tasks-section h2,
+  .dre-panel header span {
+    font-size: 1.34rem;
+  }
+
+  .tasks-section h2 {
+    margin-bottom: 10px;
+  }
+
+  .kanban-grid {
+    gap: 10px;
+  }
+
+  .task-card {
+    margin-top: 8px;
+    padding: 10px 12px;
+  }
+
+  .task-card span {
+    margin-top: 6px;
+  }
+
+  .dre-panel > header {
+    margin-bottom: 10px;
+    padding-bottom: 12px;
+  }
+
+  .dre-line {
+    grid-template-columns: 1fr 78px;
+    gap: 8px;
+    padding: 9px 0;
+  }
+
+  .dre-line span {
+    font-size: 0.82rem;
+  }
+
+  .dre-line strong {
+    margin-top: 4px;
+    font-size: 0.92rem;
+  }
+
+  .dre-line .sparkline {
+    width: 78px;
+    min-width: 78px;
+  }
+
+  .dre-total {
+    padding-top: 12px;
+  }
+}
+
+@media (max-width: 860px) {
+  .dashboard-title h1 {
+    font-size: 1.55rem;
+  }
+
+  .monthly-card__header,
+  .monthly-card__header > div {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 560px) {
+  .dre-line {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-main,
+  .dre-panel {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .bank-balance-grid,
+  .dashboard-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}

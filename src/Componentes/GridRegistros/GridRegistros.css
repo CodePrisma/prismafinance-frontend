@@ -1,0 +1,72 @@
+.grid-container {
+  width: min(100%, 1120px);
+  margin: 32px auto 54px;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-card);
+}
+
+.grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+}
+
+.grid-table th,
+.grid-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.grid-table th {
+  background-color: rgba(18, 39, 27, 0.72);
+  color: var(--color-primary-light);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grid-table tr:hover {
+  background-color: rgba(46, 91, 62, 0.45);
+}
+
+.grid-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.acoes {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.icon {
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 0.3s, transform 0.3s;
+}
+
+.icon:hover {
+  transform: translateY(-1px);
+}
+
+.edit-icon {
+  color: var(--color-primary);
+}
+
+.edit-icon:hover {
+  color: var(--color-primary-light);
+}
+
+.delete-icon {
+  color: #df8b74;
+}
+
+.delete-icon:hover {
+  color: var(--color-danger);
+}

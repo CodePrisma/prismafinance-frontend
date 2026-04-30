@@ -1,0 +1,15 @@
+{
+  "short_name": "Financeiro",
+  "name": "Controle Financeiro",
+  "icons": [
+    {
+      "src": "logo-silva-neves.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#17344b",
+  "background_color": "#ffffff"
+}
