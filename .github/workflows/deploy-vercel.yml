@@ -60,4 +60,5 @@ jobs:
           echo "Deploy URL: $DEPLOY_URL"
 
       - name: Deployment summary
-        run: echo "Production deployment: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "Production deployment: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
