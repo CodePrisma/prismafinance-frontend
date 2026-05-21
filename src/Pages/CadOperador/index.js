@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Swal from "sweetalert2";
 import DataTable from "../../Componentes/DataTable";
 import PageLayout from "../../Componentes/PageLayout";
@@ -20,6 +20,19 @@ const getInitialForm = () => ({
 
 const getOperadorId = (row) => row.IDOperador || row.idoperador || row.id;
 
+const getClienteId = (cliente) => cliente?.IDcliente || cliente?.idcliente || cliente?.id;
+
+const getClienteVinculadoId = (row) => {
+  const cliente = row.clientes?.[0] || row.Clientes?.[0];
+  return row.IDcliente || row.idcliente || getClienteId(cliente) || "";
+};
+
+const getClientesVinculadosLabel = (row) => {
+  const clientesVinculados = row.clientes || row.Clientes || [];
+  if (!clientesVinculados.length) return "Sem cliente vinculado";
+  return clientesVinculados.map((cliente) => cliente.nome || cliente.razao_social || cliente.IDcliente).join(", ");
+};
+
 const getDateValue = (value) => {
   if (!value) return formatDateInput();
 
@@ -35,6 +48,22 @@ const CadOperador = () => {
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const { isAdmin, clientes } = useAuthContext();
+
+  const clienteOptions = useMemo(() => {
+    const porId = new Map();
+
+    [...clientes, ...operadores.flatMap((operador) => operador.clientes || operador.Clientes || [])].forEach((cliente) => {
+      const idCliente = getClienteId(cliente);
+      if (!idCliente) return;
+      porId.set(Number(idCliente), {
+        ...cliente,
+        IDcliente: Number(idCliente),
+        nome: cliente.nome || cliente.razao_social || `Cliente ${idCliente}`,
+      });
+    });
+
+    return Array.from(porId.values()).sort((a, b) => a.nome.localeCompare(b.nome));
+  }, [clientes, operadores]);
 
   const updateField = (field, value) => setForm((current) => ({ ...current, [field]: value }));
 
@@ -113,7 +142,7 @@ const CadOperador = () => {
       dataCadastro: getDateValue(row.dataCadastro),
       dataExpiracao: getDateValue(row.dataExpiracao),
       situacao: Number(row.situacao) === 1 || row.situacao === "Ativo" ? 1 : 0,
-      IDcliente: row.IDcliente || row.idcliente || "",
+      IDcliente: getClienteVinculadoId(row),
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -155,7 +184,7 @@ const CadOperador = () => {
           <label className="form-field span-3"><span>Cadastro</span><input type="date" value={form.dataCadastro} onChange={(e) => updateField("dataCadastro", e.target.value)} /></label>
           <label className="form-field span-3"><span>Expiracao</span><input type="date" value={form.dataExpiracao} onChange={(e) => updateField("dataExpiracao", e.target.value)} /></label>
           <label className="form-field span-3"><span>Situacao</span><select value={form.situacao} onChange={(e) => updateField("situacao", e.target.value)}><option value={1}>Ativo</option><option value={0}>Inativo</option></select></label>
-          <label className="form-field span-6"><span>Cliente vinculado</span><select value={form.IDcliente} onChange={(e) => updateField("IDcliente", e.target.value)}><option value="">Admin/consultor sem vinculo unico</option>{clientes.map((cliente) => <option key={cliente.IDcliente} value={cliente.IDcliente}>{cliente.nome}</option>)}</select></label>
+          <label className="form-field span-6"><span>Cliente vinculado</span><select value={form.IDcliente} onChange={(e) => updateField("IDcliente", e.target.value)}><option value="">Admin/consultor sem vinculo unico</option>{clienteOptions.map((cliente) => <option key={cliente.IDcliente} value={cliente.IDcliente}>{cliente.nome}</option>)}</select></label>
         </div>
         <div className="form-footer">
           {editingId && <button type="button" className="secondary-button" onClick={limpar}>Cancelar edicao</button>}
@@ -169,6 +198,7 @@ const CadOperador = () => {
           { header: "Operador", render: (row) => <strong>{row.nome}</strong> },
           { header: "CPF", render: (row) => formatCpf(row.cpf) },
           { header: "Email", key: "email" },
+          { header: "Cliente vinculado", render: getClientesVinculadosLabel },
           { header: "Situacao", render: (row) => Number(row.situacao) === 1 || row.situacao === "Ativo" ? <span className="badge-soft badge-success">Ativo</span> : <span className="badge-soft badge-warning">Inativo</span> },
           { header: "Acoes", render: (row) => <div className="row-actions"><button className="secondary-button" onClick={() => editar(row)}>Editar</button><button className="danger-button" onClick={() => remover(row)}>Remover</button></div> },
         ]}
