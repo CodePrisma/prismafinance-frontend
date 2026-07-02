@@ -23,6 +23,17 @@ const getInitialForm = () => ({
   competencia_mes: competencia.mes,
 });
 
+const getInitialTransferencia = () => ({
+  IDconta_origem: "",
+  IDconta_destino: "",
+  descricao: "Transferencia entre contas",
+  valor: "",
+  obs: "",
+  data_lancamento: formatDateInput(),
+  competencia_ano: competencia.ano,
+  competencia_mes: competencia.mes,
+});
+
 const getLancamentoId = (row) =>
   row.IDfinanceiro ||
   row.idfinanceiro ||
@@ -31,6 +42,7 @@ const getLancamentoId = (row) =>
   row.idlancamento ||
   row.id;
 const statusLabel = (status) => ({ 1: "Em aberto", 2: "Pago/recebido", 3: "Cancelado" }[Number(status)] || status);
+const isTransferencia = (row) => row.tipo_movimento === "transferencia";
 const getDateTime = (date) => {
   if (!date) return Number.MAX_SAFE_INTEGER;
 
@@ -87,16 +99,19 @@ const getCompetenciaFromDate = (date) => {
 const Lancamentos = () => {
   const { clienteAtivo } = useAuthContext();
   const [form, setForm] = useState(getInitialForm);
+  const [modoLancamento, setModoLancamento] = useState("lancamento");
+  const [transferencia, setTransferencia] = useState(getInitialTransferencia);
   const [parcelamento, setParcelamento] = useState({ ativo: false, quantidade: 2 });
   const [contas, setContas] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [lancamentos, setLancamentos] = useState([]);
   const [provisoesHoje, setProvisoesHoje] = useState([]);
   const [saldos, setSaldos] = useState([]);
-  const [filtros, setFiltros] = useState({ ano: competencia.ano, mes: competencia.mes, status: "" });
+  const [filtros, setFiltros] = useState({ ano: competencia.ano, mes: competencia.mes, status: "", data_inicio: "", data_fim: "" });
   const [editingId, setEditingId] = useState(null);
 
   const updateField = (field, value) => setForm((current) => ({ ...current, [field]: value }));
+  const updateTransferenciaField = (field, value) => setTransferencia((current) => ({ ...current, [field]: value }));
 
   const carregarBase = async () => {
     if (!clienteAtivo?.IDcliente) return;
@@ -116,6 +131,8 @@ const Lancamentos = () => {
     if (filtros.ano) params.set("ano", filtros.ano);
     if (filtros.mes) params.set("mes", filtros.mes);
     if (filtros.status) params.set("status", filtros.status);
+    if (filtros.data_inicio) params.set("data_inicio", filtros.data_inicio);
+    if (filtros.data_fim) params.set("data_fim", filtros.data_fim);
 
     const [lancResponse, provisoesResponse] = await Promise.all([
       api.get(`/clientes/${clienteAtivo.IDcliente}/lancamentos?${params.toString()}`),
@@ -168,6 +185,39 @@ const Lancamentos = () => {
 
   const salvar = async (event) => {
     event.preventDefault();
+    if (!editingId && modoLancamento === "transferencia") {
+      if (!transferencia.IDconta_origem || !transferencia.IDconta_destino || !transferencia.valor) {
+        Swal.fire("Campos obrigatorios", "Informe conta origem, conta destino e valor.", "warning");
+        return;
+      }
+
+      if (transferencia.IDconta_origem === transferencia.IDconta_destino) {
+        Swal.fire("Contas invalidas", "A conta de origem deve ser diferente da conta de destino.", "warning");
+        return;
+      }
+
+      const competenciaTransferencia = getCompetenciaFromDate(transferencia.data_lancamento);
+      const payload = {
+        ...transferencia,
+        IDconta_origem: Number(transferencia.IDconta_origem),
+        IDconta_destino: Number(transferencia.IDconta_destino),
+        valor: Number(transferencia.valor),
+        competencia_ano: competenciaTransferencia.ano,
+        competencia_mes: competenciaTransferencia.mes,
+      };
+
+      try {
+        await api.post(`/clientes/${clienteAtivo.IDcliente}/transferencias`, payload);
+        Swal.fire("Transferencia salva", "O saldo das duas contas foi atualizado.", "success");
+        setTransferencia(getInitialTransferencia());
+        await carregarLancamentos();
+        await carregarBase();
+      } catch (error) {
+        Swal.fire("Erro", "Nao foi possivel salvar a transferencia.", "error");
+      }
+      return;
+    }
+
     if (!form.IDcontabancaria || !form.IDcatfinanceira || !form.descricao || !form.valor) {
       Swal.fire("Campos obrigatorios", "Informe conta, categoria, descricao e valor.", "warning");
       return;
@@ -194,6 +244,7 @@ const Lancamentos = () => {
       }
       setEditingId(null);
       setForm(getInitialForm());
+      setModoLancamento("lancamento");
       setParcelamento({ ativo: false, quantidade: 2 });
       await carregarLancamentos();
       await carregarBase();
@@ -203,7 +254,13 @@ const Lancamentos = () => {
   };
 
   const editar = (row) => {
+    if (isTransferencia(row)) {
+      Swal.fire("Transferencia", "Transferencias nao podem ser editadas por esta tela. Cancele e lance novamente se precisar corrigir.", "info");
+      return;
+    }
+
     setEditingId(getLancamentoId(row));
+    setModoLancamento("lancamento");
     setForm({
       IDcontabancaria: row.IDcontabancaria || row.idcontabancaria || "",
       IDcatfinanceira: row.IDcatfinanceira || row.idcatfinanceira || "",
@@ -224,6 +281,7 @@ const Lancamentos = () => {
   const limparEdicao = () => {
     setEditingId(null);
     setForm(getInitialForm());
+    setModoLancamento("lancamento");
     setParcelamento({ ativo: false, quantidade: 2 });
   };
 
@@ -275,6 +333,22 @@ const Lancamentos = () => {
           </div>
         )}
 
+        {!editingId && (
+          <div className="form-grid">
+            <label className="form-field span-3"><span>Operacao</span><select value={modoLancamento} onChange={(e) => setModoLancamento(e.target.value)}><option value="lancamento">Lancamento</option><option value="transferencia">Transferencia entre contas</option></select></label>
+          </div>
+        )}
+
+        {modoLancamento === "transferencia" && !editingId ? (
+          <div className="form-grid">
+            <label className="form-field span-3"><span>Conta origem</span><select value={transferencia.IDconta_origem} onChange={(e) => updateTransferenciaField("IDconta_origem", e.target.value)}><option value="">Selecione</option>{contas.map((conta) => <option key={conta.IDcontabancaria} value={conta.IDcontabancaria}>{conta.nomebanco} - {conta.contacorrente}</option>)}</select></label>
+            <label className="form-field span-3"><span>Conta destino</span><select value={transferencia.IDconta_destino} onChange={(e) => updateTransferenciaField("IDconta_destino", e.target.value)}><option value="">Selecione</option>{contas.map((conta) => <option key={conta.IDcontabancaria} value={conta.IDcontabancaria}>{conta.nomebanco} - {conta.contacorrente}</option>)}</select></label>
+            <label className="form-field span-3"><span>Data</span><input type="date" value={transferencia.data_lancamento} onChange={(e) => updateTransferenciaField("data_lancamento", e.target.value)} /></label>
+            <label className="form-field span-3"><span>Valor</span><input type="number" step="0.01" value={transferencia.valor} onChange={(e) => updateTransferenciaField("valor", e.target.value)} /></label>
+            <label className="form-field span-6"><span>Descricao</span><input value={transferencia.descricao} onChange={(e) => updateTransferenciaField("descricao", e.target.value)} /></label>
+            <label className="form-field span-6"><span>Observacao</span><input value={transferencia.obs} onChange={(e) => updateTransferenciaField("obs", e.target.value)} /></label>
+          </div>
+        ) : (
         <div className="form-grid">
           <label className="form-field span-3"><span>Tipo</span><select value={form.tipo} onChange={(e) => updateField("tipo", e.target.value)}><option value={1}>Credito / Receita</option><option value={2}>Debito / Despesa</option></select></label>
           <label className="form-field span-3"><span>Status</span><select value={form.status} onChange={(e) => updateField("status", e.target.value)}><option value={1}>Provisao futura</option><option value={2}>Pago / recebido</option>{editingId && <option value={3}>Cancelado</option>}</select></label>
@@ -294,9 +368,10 @@ const Lancamentos = () => {
             </>
           )}
         </div>
+        )}
         <div className="form-footer">
           {editingId && <button type="button" className="secondary-button" onClick={limparEdicao}>Cancelar edicao</button>}
-          <button className="action-button">{editingId ? "Atualizar lancamento" : "Salvar lancamento"}</button>
+          <button className="action-button">{editingId ? "Atualizar lancamento" : modoLancamento === "transferencia" ? "Salvar transferencia" : "Salvar lancamento"}</button>
         </div>
       </form>
 
@@ -304,7 +379,10 @@ const Lancamentos = () => {
         <div className="filter-row">
           <label>Ano <input type="number" value={filtros.ano} onChange={(e) => setFiltros((f) => ({ ...f, ano: e.target.value }))} /></label>
           <label>Mes <input type="number" min="1" max="12" value={filtros.mes} onChange={(e) => setFiltros((f) => ({ ...f, mes: e.target.value }))} /></label>
+          <label>Data inicial <input type="date" value={filtros.data_inicio} onChange={(e) => setFiltros((f) => ({ ...f, data_inicio: e.target.value }))} /></label>
+          <label>Data final <input type="date" value={filtros.data_fim} onChange={(e) => setFiltros((f) => ({ ...f, data_fim: e.target.value }))} /></label>
           <label>Status <select value={filtros.status} onChange={(e) => setFiltros((f) => ({ ...f, status: e.target.value }))}><option value="">Todos</option><option value={1}>Em aberto</option><option value={2}>Pago/recebido</option><option value={3}>Cancelado</option></select></label>
+          <button type="button" className="secondary-button" onClick={() => setFiltros({ ano: "", mes: "", status: "", data_inicio: "", data_fim: "" })}>Limpar filtros</button>
         </div>
       </section>
 
@@ -312,11 +390,11 @@ const Lancamentos = () => {
         data={lancamentos}
         columns={[
           { header: "Descricao", render: (row) => <strong>{row.descricao}</strong> },
-          { header: "Tipo", render: (row) => Number(row.tipo) === 1 ? <span className="badge-soft badge-success">Credito</span> : <span className="badge-soft badge-danger">Debito</span> },
+          { header: "Tipo", render: (row) => isTransferencia(row) ? <span className="badge-soft badge-warning">Transferencia</span> : Number(row.tipo) === 1 ? <span className="badge-soft badge-success">Credito</span> : <span className="badge-soft badge-danger">Debito</span> },
           { header: "Valor", render: (row) => formatCurrency(row.valor) },
           { header: "Vencimento", key: "data_vencimento" },
           { header: "Status", render: (row) => <span className="badge-soft">{statusLabel(row.status)}</span> },
-          { header: "Acoes", render: (row) => <div className="row-actions"><button className="secondary-button" onClick={() => editar(row)}>Editar</button>{Number(row.status) === 1 && <button className="action-button" onClick={() => confirmar(row)}>Confirmar</button>} {Number(row.status) !== 3 && <button className="danger-button" onClick={() => cancelar(row)}>Cancelar</button>}</div> },
+          { header: "Acoes", render: (row) => <div className="row-actions">{!isTransferencia(row) && <button className="secondary-button" onClick={() => editar(row)}>Editar</button>}{!isTransferencia(row) && Number(row.status) === 1 && <button className="action-button" onClick={() => confirmar(row)}>Confirmar</button>} {Number(row.status) !== 3 && <button className="danger-button" onClick={() => cancelar(row)}>{isTransferencia(row) ? "Cancelar par" : "Cancelar"}</button>}</div> },
         ]}
       />
     </PageLayout>

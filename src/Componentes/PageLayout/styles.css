@@ -104,6 +104,10 @@
   gap: 15px;
 }
 
+.crud-card .form-grid + .form-grid {
+  margin-top: 15px;
+}
+
 .form-field {
   grid-column: span 4;
   display: flex;

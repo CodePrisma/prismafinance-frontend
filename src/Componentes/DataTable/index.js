@@ -26,7 +26,7 @@ const DataTable = ({ columns, data, emptyMessage = "Nenhum registro encontrado."
         <tbody>
           {data?.length ? (
             data.map((row, index) => (
-              <tr key={row.id || row.IDcliente || row.IDOperador || row.IDcontabancaria || row.IDcatfinanceira || row.idlancamento || index}>
+              <tr key={row.id || row.IDfinanceiro || row.IDcliente || row.IDOperador || row.IDcontabancaria || row.IDcatfinanceira || row.idlancamento || index}>
                 {columns.map((column) => (
                   <td key={column.key || column.header}>
                     {renderCellValue(column, row, index)}
