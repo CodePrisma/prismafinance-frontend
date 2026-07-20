@@ -9,6 +9,7 @@ import {
 
 import Acoes from "./Pages/Acoes";
 import CadCategoria from "./Pages/CadCategoria";
+import CadGrupoDRE from "./Pages/CadGrupoDRE";
 import CadOperador from "./Pages/CadOperador";
 import CadastroCliente from "./Pages/CadastroCliente";
 import ContasBancarias from "./Pages/ContasBancarias";
@@ -24,6 +25,7 @@ export const routeNames = {
   cadastroCliente: "/CadastroCliente",
   cadOperador: "/CadOperador",
   cadCategoria: "/CadCategoria",
+  cadGrupoDRE: "/CadGrupoDRE",
   contasBancarias: "/ContasBancarias",
   lancamentos: "/Lancamentos",
   dre: "/DRE",
@@ -53,6 +55,7 @@ const Rotas = () => (
       <Route path={routeNames.cadastroCliente} element={withProtection(<CadastroCliente />)} />
       <Route path={routeNames.cadOperador} element={withProtection(<CadOperador />)} />
       <Route path={routeNames.cadCategoria} element={withProtection(<CadCategoria />)} />
+      <Route path={routeNames.cadGrupoDRE} element={withProtection(<CadGrupoDRE />)} />
       <Route path={routeNames.contasBancarias} element={withProtection(<ContasBancarias />)} />
       <Route path={routeNames.lancamentos} element={withProtection(<Lancamentos />)} />
       <Route path={routeNames.dre} element={withProtection(<DRE />)} />

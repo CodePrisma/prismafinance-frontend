@@ -8,6 +8,15 @@ import { useAuthContext } from "../../context/authContext";
 import { currentCompetencia, formatCurrency, formatDateInput } from "../../utils/formatters";
 
 const competencia = currentCompetencia();
+const getInitialFilters = () => {
+  const hoje = new Date();
+  return {
+    conta: "",
+    status: "",
+    data_inicio: formatDateInput(new Date(hoje.getFullYear(), hoje.getMonth(), 1)),
+    data_fim: formatDateInput(new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0)),
+  };
+};
 const getInitialForm = () => ({
   IDcontabancaria: "",
   IDcatfinanceira: "",
@@ -107,7 +116,7 @@ const Lancamentos = () => {
   const [lancamentos, setLancamentos] = useState([]);
   const [provisoesHoje, setProvisoesHoje] = useState([]);
   const [saldos, setSaldos] = useState([]);
-  const [filtros, setFiltros] = useState({ ano: competencia.ano, mes: competencia.mes, status: "", data_inicio: "", data_fim: "" });
+  const [filtros, setFiltros] = useState(getInitialFilters);
   const [editingId, setEditingId] = useState(null);
 
   const updateField = (field, value) => setForm((current) => ({ ...current, [field]: value }));
@@ -128,8 +137,7 @@ const Lancamentos = () => {
   const carregarLancamentos = async () => {
     if (!clienteAtivo?.IDcliente) return;
     const params = new URLSearchParams();
-    if (filtros.ano) params.set("ano", filtros.ano);
-    if (filtros.mes) params.set("mes", filtros.mes);
+    if (filtros.conta) params.set("conta", filtros.conta);
     if (filtros.status) params.set("status", filtros.status);
     if (filtros.data_inicio) params.set("data_inicio", filtros.data_inicio);
     if (filtros.data_fim) params.set("data_fim", filtros.data_fim);
@@ -377,12 +385,11 @@ const Lancamentos = () => {
 
       <section className="filter-card">
         <div className="filter-row">
-          <label>Ano <input type="number" value={filtros.ano} onChange={(e) => setFiltros((f) => ({ ...f, ano: e.target.value }))} /></label>
-          <label>Mes <input type="number" min="1" max="12" value={filtros.mes} onChange={(e) => setFiltros((f) => ({ ...f, mes: e.target.value }))} /></label>
+          <label>Conta bancaria <select value={filtros.conta} onChange={(e) => setFiltros((f) => ({ ...f, conta: e.target.value }))}><option value="">Todas</option>{contas.map((conta) => <option key={conta.IDcontabancaria} value={conta.IDcontabancaria}>{conta.nomebanco} - {conta.contacorrente}</option>)}</select></label>
           <label>Data inicial <input type="date" value={filtros.data_inicio} onChange={(e) => setFiltros((f) => ({ ...f, data_inicio: e.target.value }))} /></label>
           <label>Data final <input type="date" value={filtros.data_fim} onChange={(e) => setFiltros((f) => ({ ...f, data_fim: e.target.value }))} /></label>
           <label>Status <select value={filtros.status} onChange={(e) => setFiltros((f) => ({ ...f, status: e.target.value }))}><option value="">Todos</option><option value={1}>Em aberto</option><option value={2}>Pago/recebido</option><option value={3}>Cancelado</option></select></label>
-          <button type="button" className="secondary-button" onClick={() => setFiltros({ ano: "", mes: "", status: "", data_inicio: "", data_fim: "" })}>Limpar filtros</button>
+          <button type="button" className="secondary-button" onClick={() => setFiltros(getInitialFilters())}>Restaurar periodo</button>
         </div>
       </section>
 

@@ -21,6 +21,7 @@ const Index = () => {
   const [usuario, setUsuario] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { login } = useAuthContext();
 
   const presentationItems = [
@@ -30,17 +31,27 @@ const Index = () => {
   ];
 
   const handleLogin = async () => {
-    const result = await login(usuario, password);
-
-    if (result.success) {
-      navigate("/Menu");
-      return;
-    }
+    if (isLoggingIn) return;
 
     const msgEl = document.getElementById("msm_senha");
-    if (msgEl) {
-      msgEl.innerText = result.message || "Usuario e senha nao conferem.";
-      msgEl.style.display = "block";
+    if (msgEl) msgEl.style.display = "none";
+
+    setIsLoggingIn(true);
+
+    try {
+      const result = await login(usuario, password);
+
+      if (result.success) {
+        navigate("/Menu");
+        return;
+      }
+
+      if (msgEl) {
+        msgEl.innerText = result.message || "Usuario e senha nao conferem.";
+        msgEl.style.display = "block";
+      }
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -84,6 +95,7 @@ const Index = () => {
                       placeholder="Digite seu usuario"
                       value={usuario}
                       onChange={(event) => setUsuario(event.target.value)}
+                      disabled={isLoggingIn}
                     />
                   </div>
 
@@ -102,6 +114,7 @@ const Index = () => {
                       placeholder="Digite sua senha"
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
+                      disabled={isLoggingIn}
                       style={{ paddingRight: "3rem" }}
                     />
                     <span
@@ -115,8 +128,14 @@ const Index = () => {
                   <button
                     type="submit"
                     className="btn btn-primary btn-lg w-100 login-submit"
+                    disabled={isLoggingIn}
+                    aria-busy={isLoggingIn}
                   >
-                    Entrar <FaArrowRight />
+                    {isLoggingIn ? (
+                      <><span className="login-spinner" aria-hidden="true" /> Entrando...</>
+                    ) : (
+                      <>Entrar <FaArrowRight /></>
+                    )}
                   </button>
 
                   <label id="msm_senha" className="login-error"></label>

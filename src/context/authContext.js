@@ -164,8 +164,20 @@ export const AuthProvider = ({ children }) => {
 
   const refreshClientes = async () => {
     const response = await api.get("/me/clientes");
-    setClientes(response.data || []);
-    return response.data || [];
+    const clientesAtualizados = response.data || [];
+    setClientes(clientesAtualizados);
+
+    if (
+      clienteAtivo &&
+      !clientesAtualizados.some(
+        (cliente) => Number(cliente.IDcliente) === Number(clienteAtivo.IDcliente)
+      )
+    ) {
+      localStorage.removeItem(CLIENTE_ATIVO_KEY);
+      setClienteAtivoState(null);
+    }
+
+    return clientesAtualizados;
   };
 
   const isAdmin = useMemo(() => {
