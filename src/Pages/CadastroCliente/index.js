@@ -25,6 +25,7 @@ const initialForm = {
 
 const normalizeList = (payload) => payload?.data || payload?.clientes || payload || [];
 const getClienteId = (cliente) => cliente.IDcliente || cliente.idcliente || cliente.id;
+const isClienteAtivo = (cliente) => ![false, 0, "0", "false"].includes(cliente.ativo);
 
 const CadastroCliente = () => {
   const [form, setForm] = useState(initialForm);
@@ -151,6 +152,29 @@ const CadastroCliente = () => {
     }
   };
 
+  const inativar = async (cliente) => {
+    const id = getClienteId(cliente);
+    const confirm = await Swal.fire({
+      title: "Inativar cliente?",
+      text: "O cliente deixara de aparecer na selecao para operacao.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Inativar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await api.patch(`/admin/clientes/${id}/inativar`);
+      if (Number(editingId) === Number(id)) limpar();
+      await carregarClientes();
+      await refreshClientes();
+      Swal.fire("Cliente inativado", "O cliente nao aparecera mais na selecao operacional.", "success");
+    } catch (error) {
+      Swal.fire("Erro", error.response?.data?.errors?.default || "Nao foi possivel inativar o cliente.", "error");
+    }
+  };
+
   if (!isAdmin) {
     return (
       <PageLayout title="Cadastro de cliente" eyebrow="Cadastro interno" requireCliente={false}>
@@ -198,7 +222,8 @@ const CadastroCliente = () => {
           { header: "CPF/CNPJ", render: (row) => formatCpfCnpj(row.cpf_cnpj, row.tipo) },
           { header: "Tipo", render: (row) => Number(row.tipo) === 1 ? "Pessoa fisica" : "Pessoa juridica" },
           { header: "Email", key: "email" },
-          { header: "Acoes", render: (row) => <div className="row-actions"><button className="secondary-button" onClick={() => editar(row)}>Editar</button><button className="danger-button" onClick={() => remover(row)}>Remover</button></div> },
+          { header: "Status", render: (row) => isClienteAtivo(row) ? <span className="badge-soft badge-success">Ativo</span> : <span className="badge-soft badge-danger">Inativo</span> },
+          { header: "Acoes", render: (row) => <div className="row-actions"><button className="secondary-button" onClick={() => editar(row)}>Editar</button>{isClienteAtivo(row) && <button className="danger-button" onClick={() => inativar(row)}>Inativar</button>}<button className="danger-button" onClick={() => remover(row)}>Remover</button></div> },
         ]}
       />
     </PageLayout>

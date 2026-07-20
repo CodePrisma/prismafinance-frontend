@@ -152,6 +152,25 @@
   color: var(--color-bg-primary) !important;
 }
 
+.login-submit:disabled {
+  cursor: wait;
+  opacity: 0.78;
+  background: rgba(200, 169, 106, 0.08) !important;
+}
+
+.login-spinner {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(200, 169, 106, 0.35);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: login-spin 700ms linear infinite;
+}
+
+@keyframes login-spin {
+  to { transform: rotate(360deg); }
+}
+
 .login-error {
   display: none;
   color: #ff8f7f;

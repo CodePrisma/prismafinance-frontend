@@ -110,6 +110,7 @@ const MenuLateral = () => {
 
   const clienteRoutes = [
     { to: "/CadCategoria", label: "Categorias", icon: <FaLayerGroup /> },
+    { to: "/CadGrupoDRE", label: "Grupos DRE", icon: <FaLayerGroup /> },
     { to: "/ContasBancarias", label: "Contas bancarias", icon: <FaCreditCard /> },
     { to: "/Lancamentos", label: "Lancamentos", icon: <FaClipboardList /> },
     { to: "/DRE", label: "DRE", icon: <FaChartLine /> },
@@ -177,7 +178,7 @@ const MenuLateral = () => {
           )}
 
           <MenuSection title="Cadastros" collapsible defaultOpen={false} icon={<FaLayerGroup />}>
-            {clienteRoutes.slice(0, 2).map((item) => (
+            {clienteRoutes.slice(0, 3).map((item) => (
               <NavLink key={item.to} to={item.to} onClick={handleNavigate} className={({ isActive }) => (isActive ? "active" : undefined)}>
                 <span className="iconesMenu">{item.icon}</span>
                 {item.label}
@@ -186,7 +187,7 @@ const MenuLateral = () => {
           </MenuSection>
 
           <MenuSection title="Operacao">
-            {clienteRoutes.slice(2).map((item) => (
+            {clienteRoutes.slice(3).map((item) => (
               <NavLink key={item.to} to={item.to} onClick={handleNavigate} className={({ isActive }) => (isActive ? "active" : undefined)}>
                 <span className="iconesMenu">{item.icon}</span>
                 {item.label}
