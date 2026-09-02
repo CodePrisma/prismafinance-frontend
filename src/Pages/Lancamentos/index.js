@@ -171,6 +171,21 @@ const Lancamentos = () => {
     const tipoCategoria = filtros.tipo === "credito" ? 1 : filtros.tipo === "debito" ? 2 : null;
     return tipoCategoria ? categorias.filter((cat) => Number(cat.tipo) === tipoCategoria) : categorias;
   }, [categorias, filtros.tipo]);
+  const totaisFiltrados = useMemo(() => {
+    const totais = lancamentos.reduce((resultado, lancamento) => {
+      const valor = Number(lancamento.valor) || 0;
+
+      if (Number(lancamento.tipo) === 1) resultado.creditos += valor;
+      if (Number(lancamento.tipo) === 2) resultado.debitos += valor;
+
+      return resultado;
+    }, { creditos: 0, debitos: 0 });
+
+    return {
+      ...totais,
+      saldo: totais.creditos - totais.debitos,
+    };
+  }, [lancamentos]);
 
   const criarPayload = (dadosForm) => ({
       ...dadosForm,
@@ -418,6 +433,13 @@ const Lancamentos = () => {
           { header: "Acoes", render: (row) => <div className="row-actions">{!isTransferencia(row) && <button className="secondary-button" onClick={() => editar(row)}>Editar</button>}{!isTransferencia(row) && Number(row.status) === 1 && <button className="action-button" onClick={() => confirmar(row)}>Confirmar</button>} {Number(row.status) !== 3 && <button className="danger-button" onClick={() => cancelar(row)}>{isTransferencia(row) ? "Cancelar par" : "Cancelar"}</button>}</div> },
         ]}
       />
+
+      <section className="metrics-grid" aria-label="Totais dos lancamentos filtrados">
+        <article className="metric-card"><span>Lancamentos encontrados</span><strong>{lancamentos.length}</strong></article>
+        <article className="metric-card"><span>Creditos filtrados</span><strong>{formatCurrency(totaisFiltrados.creditos)}</strong></article>
+        <article className="metric-card"><span>Debitos filtrados</span><strong>{formatCurrency(totaisFiltrados.debitos)}</strong></article>
+        <article className="metric-card"><span>Saldo liquido filtrado</span><strong>{formatCurrency(totaisFiltrados.saldo)}</strong></article>
+      </section>
     </PageLayout>
   );
 };
