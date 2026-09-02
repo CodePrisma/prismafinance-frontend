@@ -12,6 +12,8 @@ const getInitialFilters = () => {
   const hoje = new Date();
   return {
     conta: "",
+    tipo: "",
+    categoria: "",
     status: "",
     data_inicio: formatDateInput(new Date(hoje.getFullYear(), hoje.getMonth(), 1)),
     data_fim: formatDateInput(new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0)),
@@ -138,6 +140,12 @@ const Lancamentos = () => {
     if (!clienteAtivo?.IDcliente) return;
     const params = new URLSearchParams();
     if (filtros.conta) params.set("conta", filtros.conta);
+    if (filtros.tipo === "credito" || filtros.tipo === "debito") {
+      params.set("tipo", filtros.tipo === "credito" ? "1" : "2");
+      params.set("tipo_movimento", "lancamento");
+    }
+    if (filtros.tipo === "transferencia") params.set("tipo_movimento", "transferencia");
+    if (filtros.categoria) params.set("categoria", filtros.categoria);
     if (filtros.status) params.set("status", filtros.status);
     if (filtros.data_inicio) params.set("data_inicio", filtros.data_inicio);
     if (filtros.data_fim) params.set("data_fim", filtros.data_fim);
@@ -159,6 +167,10 @@ const Lancamentos = () => {
   }, [clienteAtivo, filtros]);
 
   const categoriasFiltradas = useMemo(() => categorias.filter((cat) => Number(cat.tipo) === Number(form.tipo)), [categorias, form.tipo]);
+  const categoriasFiltro = useMemo(() => {
+    const tipoCategoria = filtros.tipo === "credito" ? 1 : filtros.tipo === "debito" ? 2 : null;
+    return tipoCategoria ? categorias.filter((cat) => Number(cat.tipo) === tipoCategoria) : categorias;
+  }, [categorias, filtros.tipo]);
 
   const criarPayload = (dadosForm) => ({
       ...dadosForm,
@@ -386,6 +398,8 @@ const Lancamentos = () => {
       <section className="filter-card">
         <div className="filter-row">
           <label>Conta bancaria <select value={filtros.conta} onChange={(e) => setFiltros((f) => ({ ...f, conta: e.target.value }))}><option value="">Todas</option>{contas.map((conta) => <option key={conta.IDcontabancaria} value={conta.IDcontabancaria}>{conta.nomebanco} - {conta.contacorrente}</option>)}</select></label>
+          <label>Tipo <select value={filtros.tipo} onChange={(e) => setFiltros((f) => ({ ...f, tipo: e.target.value, categoria: "" }))}><option value="">Todos</option><option value="credito">Credito / Receita</option><option value="debito">Debito / Despesa</option><option value="transferencia">Transferencia</option></select></label>
+          <label>Categoria <select value={filtros.categoria} disabled={filtros.tipo === "transferencia"} onChange={(e) => setFiltros((f) => ({ ...f, categoria: e.target.value }))}><option value="">{filtros.tipo === "transferencia" ? "Nao se aplica" : "Todas"}</option>{filtros.tipo !== "transferencia" && categoriasFiltro.map((categoria) => <option key={categoria.IDcatfinanceira} value={categoria.IDcatfinanceira}>{categoria.nome}</option>)}</select></label>
           <label>Data inicial <input type="date" value={filtros.data_inicio} onChange={(e) => setFiltros((f) => ({ ...f, data_inicio: e.target.value }))} /></label>
           <label>Data final <input type="date" value={filtros.data_fim} onChange={(e) => setFiltros((f) => ({ ...f, data_fim: e.target.value }))} /></label>
           <label>Status <select value={filtros.status} onChange={(e) => setFiltros((f) => ({ ...f, status: e.target.value }))}><option value="">Todos</option><option value={1}>Em aberto</option><option value={2}>Pago/recebido</option><option value={3}>Cancelado</option></select></label>

@@ -52,6 +52,10 @@ const getCardValue = (cards, keys) => {
   return key ? toNumber(cards[key]) : 0;
 };
 
+const isTransferencia = (lancamento) =>
+  String(lancamento?.tipo_movimento || "").toLowerCase() === "transferencia" ||
+  Boolean(lancamento?.transferencia_id);
+
 const calcularKpisFinanceiros = (lancamentosCompetencia = [], lancamentosFuturos = [], cards = {}) => {
   if (!lancamentosCompetencia.length && !lancamentosFuturos.length) {
     return {
@@ -63,6 +67,8 @@ const calcularKpisFinanceiros = (lancamentosCompetencia = [], lancamentosFuturos
   }
 
   const totaisCompetencia = lancamentosCompetencia.reduce((totais, lancamento) => {
+    if (isTransferencia(lancamento)) return totais;
+
     const status = Number(lancamento.status);
     const tipo = Number(lancamento.tipo);
     const valor = toNumber(lancamento.valor);
@@ -77,6 +83,8 @@ const calcularKpisFinanceiros = (lancamentosCompetencia = [], lancamentosFuturos
   });
 
   const totaisFuturos = lancamentosFuturos.reduce((totais, lancamento) => {
+    if (isTransferencia(lancamento)) return totais;
+
     const status = Number(lancamento.status);
     const tipo = Number(lancamento.tipo);
     const valor = toNumber(lancamento.valor);
