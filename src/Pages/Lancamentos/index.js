@@ -122,6 +122,15 @@ const Lancamentos = () => {
   const [editingId, setEditingId] = useState(null);
 
   const updateField = (field, value) => setForm((current) => ({ ...current, [field]: value }));
+  const updateDataLancamento = (value) => {
+    const competenciaLancamento = getCompetenciaFromDate(value);
+    setForm((current) => ({
+      ...current,
+      data_lancamento: value,
+      competencia_ano: competenciaLancamento.ano,
+      competencia_mes: competenciaLancamento.mes,
+    }));
+  };
   const updateTransferenciaField = (field, value) => setTransferencia((current) => ({ ...current, [field]: value }));
 
   const carregarBase = async () => {
@@ -187,7 +196,10 @@ const Lancamentos = () => {
     };
   }, [lancamentos]);
 
-  const criarPayload = (dadosForm) => ({
+  const criarPayload = (dadosForm) => {
+    const competenciaLancamento = getCompetenciaFromDate(dadosForm.data_lancamento);
+
+    return {
       ...dadosForm,
       IDcontabancaria: Number(dadosForm.IDcontabancaria),
       IDcatfinanceira: Number(dadosForm.IDcatfinanceira),
@@ -195,9 +207,10 @@ const Lancamentos = () => {
       valor: Number(dadosForm.valor),
       status: Number(dadosForm.status),
       data_baixa: Number(dadosForm.status) === 2 ? dadosForm.data_baixa || dadosForm.data_lancamento : null,
-      competencia_ano: Number(dadosForm.competencia_ano),
-      competencia_mes: Number(dadosForm.competencia_mes),
-  });
+      competencia_ano: competenciaLancamento.ano,
+      competencia_mes: competenciaLancamento.mes,
+    };
+  };
 
   const criarParcelas = () => {
     const quantidade = Math.max(1, Number(parcelamento.quantidade || 1));
@@ -296,6 +309,8 @@ const Lancamentos = () => {
 
     setEditingId(getLancamentoId(row));
     setModoLancamento("lancamento");
+    const dataLancamento = getDateInputValue(row.data_lancamento);
+    const competenciaLancamento = getCompetenciaFromDate(dataLancamento);
     setForm({
       IDcontabancaria: row.IDcontabancaria || row.idcontabancaria || "",
       IDcatfinanceira: row.IDcatfinanceira || row.idcatfinanceira || "",
@@ -303,12 +318,12 @@ const Lancamentos = () => {
       tipo: Number(row.tipo || 1),
       valor: String(row.valor || ""),
       obs: row.obs || "",
-      data_lancamento: getDateInputValue(row.data_lancamento),
+      data_lancamento: dataLancamento,
       data_vencimento: getDateInputValue(row.data_vencimento),
       data_baixa: getDateInputValue(row.data_baixa),
       status: Number(row.status || 1),
-      competencia_ano: row.competencia_ano || filtros.ano || competencia.ano,
-      competencia_mes: row.competencia_mes || filtros.mes || competencia.mes,
+      competencia_ano: competenciaLancamento.ano,
+      competencia_mes: competenciaLancamento.mes,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -391,10 +406,10 @@ const Lancamentos = () => {
           <label className="form-field span-3"><span>Categoria</span><select value={form.IDcatfinanceira} onChange={(e) => updateField("IDcatfinanceira", e.target.value)}><option value="">Selecione</option>{categoriasFiltradas.map((cat) => <option key={cat.IDcatfinanceira} value={cat.IDcatfinanceira}>{cat.nome}</option>)}</select></label>
           <label className="form-field span-6"><span>Descricao</span><input value={form.descricao} onChange={(e) => updateField("descricao", e.target.value)} /></label>
           <label className="form-field span-2"><span>Valor</span><input type="number" step="0.01" value={form.valor} onChange={(e) => updateField("valor", e.target.value)} /></label>
-          <label className="form-field span-2"><span>Lancamento</span><input type="date" value={form.data_lancamento} onChange={(e) => updateField("data_lancamento", e.target.value)} /></label>
+          <label className="form-field span-2"><span>Lancamento</span><input type="date" value={form.data_lancamento} onChange={(e) => updateDataLancamento(e.target.value)} /></label>
           <label className="form-field span-2"><span>Vencimento</span><input type="date" value={form.data_vencimento} onChange={(e) => updateField("data_vencimento", e.target.value)} /></label>
-          <label className="form-field span-2"><span>Ano</span><input type="number" value={form.competencia_ano} onChange={(e) => updateField("competencia_ano", e.target.value)} /></label>
-          <label className="form-field span-2"><span>Mes</span><input type="number" min="1" max="12" value={form.competencia_mes} onChange={(e) => updateField("competencia_mes", e.target.value)} /></label>
+          <label className="form-field span-2"><span>Ano da competencia</span><input type="number" value={form.competencia_ano} readOnly /></label>
+          <label className="form-field span-2"><span>Mes da competencia</span><input type="number" value={form.competencia_mes} readOnly /></label>
           <label className="form-field span-8"><span>Observacao</span><input value={form.obs} onChange={(e) => updateField("obs", e.target.value)} /></label>
           {!editingId && (
             <>
