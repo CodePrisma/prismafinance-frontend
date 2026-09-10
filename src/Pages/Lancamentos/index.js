@@ -409,8 +409,6 @@ const Lancamentos = () => {
           <label className="form-field span-2"><span>Valor</span><input type="number" step="0.01" value={form.valor} onChange={(e) => updateField("valor", e.target.value)} /></label>
           <label className="form-field span-2"><span>Lancamento</span><input type="date" value={form.data_lancamento} onChange={(e) => updateField("data_lancamento", e.target.value)} /></label>
           <label className="form-field span-2"><span>Vencimento</span><input type="date" value={form.data_vencimento} onChange={(e) => updateDataVencimento(e.target.value)} /></label>
-          <label className="form-field span-2"><span>Ano da competencia</span><input type="number" value={form.competencia_ano} readOnly /></label>
-          <label className="form-field span-2"><span>Mes da competencia</span><input type="number" value={form.competencia_mes} readOnly /></label>
           <label className="form-field span-8"><span>Observacao</span><input value={form.obs} onChange={(e) => updateField("obs", e.target.value)} /></label>
           {!editingId && (
             <>
